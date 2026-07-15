@@ -1,54 +1,50 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import {
+  useGetProdutosQuery,
+  Produto as ProdutoType,
+  produtosLocais
+} from './store/api'
 import Header from './components/Header'
 import Produtos from './containers/Produtos'
-
 import { GlobalStyle } from './styles'
 
-export type Produto = {
-  id: number
-  nome: string
-  preco: number
-  imagem: string
-}
+export type Produto = ProdutoType
+
+export const paraReal = (valor: number) =>
+  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
+    valor
+  )
 
 function App() {
-  const [produtos, setProdutos] = useState<Produto[]>([])
-  const [carrinho, setCarrinho] = useState<Produto[]>([])
+  const { data, isLoading } = useGetProdutosQuery()
   const [favoritos, setFavoritos] = useState<Produto[]>([])
 
-  useEffect(() => {
-    fetch('https://api-ebac.vercel.app/api/ebac_sports')
-      .then((res) => res.json())
-      .then((res) => setProdutos(res))
-  }, [])
+  // Se 'data' existir, usamos ele; caso contrário, usamos a lista local vazia ou cheia
+  const produtos: Produto[] = data ? data : produtosLocais
 
-  function adicionarAoCarrinho(produto: Produto) {
-    if (carrinho.find((p) => p.id === produto.id)) {
-      alert('Item já adicionado')
-    } else {
-      setCarrinho([...carrinho, produto])
-    }
-  }
-
-  function favoritar(produto: Produto) {
-    if (favoritos.find((p) => p.id === produto.id)) {
-      const favoritosSemProduto = favoritos.filter((p) => p.id !== produto.id)
-      setFavoritos(favoritosSemProduto)
+  const favoritar = (produto: Produto) => {
+    if (favoritos.find((f) => f.id === produto.id)) {
+      const favoritosSemOProduto = favoritos.filter((f) => f.id !== produto.id)
+      setFavoritos(favoritosSemOProduto)
     } else {
       setFavoritos([...favoritos, produto])
     }
+  }
+
+  // Usamos a constante 'produtos' que já está garantida como Array pelo TypeScript
+  if (isLoading && produtos.length === 0) {
+    return <h5>Carregando produtos...</h5>
   }
 
   return (
     <>
       <GlobalStyle />
       <div className="container">
-        <Header favoritos={favoritos} itensNoCarrinho={carrinho} />
+        <Header />
         <Produtos
           produtos={produtos}
           favoritos={favoritos}
           favoritar={favoritar}
-          adicionarAoCarrinho={adicionarAoCarrinho}
         />
       </div>
     </>

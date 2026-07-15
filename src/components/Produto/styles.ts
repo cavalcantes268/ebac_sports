@@ -10,10 +10,15 @@ export const Titulo = styled.h3`
 
 export const Capa = styled.div`
   position: relative;
+  background-color: #f5f5f5; /* Fundo cinza suave caso a imagem falhe */
+  border-radius: 4px;
+  overflow: hidden;
 
   img {
     display: block;
     width: 100%;
+    height: 220px; /* Força todas as imagens a terem exatamente a mesma altura */
+    object-fit: cover; /* Faz a imagem preencher o espaço sem distorcer */
     margin-bottom: 8px;
   }
 `
@@ -44,6 +49,7 @@ export const Tag = styled.span`
   font-weight: 700;
   color: #fff;
 `
+
 export const Plataformas = styled.ul`
   display: flex;
   flex-wrap: wrap;
@@ -60,6 +66,7 @@ export const Plataformas = styled.ul`
     font-weight: bold;
   }
 `
+
 export const BtnComprar = styled.button`
   display: block;
   width: 100%;
